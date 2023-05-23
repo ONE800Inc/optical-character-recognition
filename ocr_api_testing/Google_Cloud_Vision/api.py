@@ -1,13 +1,14 @@
 import argparse
 import time
 
+
 def detect_text(path):
     from google.cloud import vision
     client = vision.ImageAnnotatorClient()
 
     with open(path, "rb") as image_file:
         content = image_file.read()
-    
+
     image = vision.Image(content=content)
 
     response = client.text_detection(image=image)
@@ -22,12 +23,17 @@ def detect_text(path):
 
         print('bounds: {}'.format(','.join(vertices)))
 
+    with open(".\\results\\readme_goog.txt", "w", encoding='utf=8') as f:
+        for s in range(1):
+            f.write(texts[s].description)
+
     if response.error.message:
         raise Exception(
             '{}\nFor more info on error messages, check: '
             'https://cloud.google.com/apis/design/errors'.format(
                 response.error.message))
-    
+
+
 def run_local(args):
     if args.command == 'text':
         start_time = time.time()
@@ -37,7 +43,9 @@ def run_local(args):
     # add more commands
 
 
-# detect_text("Sample_Contract.jpg")
+start_time = time.time()
+detect_text("./images/whitespot.jpg")
+print("Elapsed time: {} seconds".format(time.time() - start_time))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(

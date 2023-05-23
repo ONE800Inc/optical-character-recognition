@@ -47,7 +47,8 @@ endpoint = "https://one800ocr.cognitiveservices.azure.com/"
 # </snippet_imports_and_vars>
 
 # <snippet_client>
-computervision_client = ComputerVisionClient(endpoint, CognitiveServicesCredentials(subscription_key))
+computervision_client = ComputerVisionClient(
+    endpoint, CognitiveServicesCredentials(subscription_key))
 # </snippet_client>
 '''
 END - Authenticate
@@ -73,7 +74,7 @@ This API call can also extract handwriting style text (not shown).
 # # Grab the ID from the URL
 # operation_id = read_operation_location.split("/")[-1]
 
-# # Call the "GET" API and wait for it to retrieve the results 
+# # Call the "GET" API and wait for it to retrieve the results
 # while True:
 #     read_result = computervision_client.get_read_result(operation_id)
 #     if read_result.status not in ['notStarted', 'running']:
@@ -101,7 +102,7 @@ print("===== Read File - local =====")
 # start timer
 start_time = time.time()
 # Get image path
-read_image_path = os.path.join ("./images/Sample_Contract.jpg")
+read_image_path = os.path.join("./images/whitespot.jpg")
 # Open the image
 read_image = open(read_image_path, "rb")
 
@@ -115,16 +116,20 @@ operation_id = read_operation_location.split("/")[-1]
 # Call the "GET" API and wait for the retrieval of the results
 while True:
     read_result = computervision_client.get_read_result(operation_id)
-    if read_result.status.lower () not in ['notstarted', 'running']:
+    if read_result.status.lower() not in ['notstarted', 'running']:
         break
-    print ('Waiting for result...')
+    print('Waiting for result...')
     time.sleep(10)
 
-# Print results, line by line
-if read_result.status == OperationStatusCodes.succeeded:
-    for text_result in read_result.analyze_result.read_results:
-        for line in text_result.lines:
-            print(line.text)
+with open(".\\results\\readme_azure.txt", "w", encoding='utf=8') as f:
+
+    # Print results, line by line
+    if read_result.status == OperationStatusCodes.succeeded:
+        for text_result in read_result.analyze_result.read_results:
+            for line in text_result.lines:
+                print(line.text)
+                f.write(line.text)
+                f.write("\n")
 
 print()
 # print the elapsed time
