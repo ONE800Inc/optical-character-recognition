@@ -1,6 +1,14 @@
 import boto3
 import time
+import os
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+image_file_name = "whitespot.jpg"
+results_file_name = "results_awsrekognition.txt"
+
+read_image_path = os.path.join(current_dir, "images", image_file_name)
+result_path = os.path.join(current_dir, "results", results_file_name)
 
 def detect_text_local_file(photo):
 
@@ -9,7 +17,7 @@ def detect_text_local_file(photo):
     with open(photo, 'rb') as image:
         response = client.detect_text(Image={'Bytes': image.read()})
 
-    with open(".\\results\\readme_aws.txt", "w", encoding='utf=8') as f:
+    with open(result_path, "w", encoding='utf=8') as f:
 
         textDetections = response['TextDetections']
         print('Detected text\n----------')
@@ -31,7 +39,7 @@ def detect_text_local_file(photo):
 
 def main():
     start_time = time.time()
-    photo = 'images/whitespot.jpg'
+    photo = read_image_path
 
     label_count = detect_text_local_file(photo)
     print("text detected: " + str(label_count))

@@ -6,11 +6,14 @@ import time
 # Document
 
 start_time = time.time()
-file_dir = os.path.dirname(os.path.realpath('__file__'))
-documentName = os.path.join(file_dir, ".\images\whitespot.jpg")
+current_dir = os.path.dirname(os.path.abspath(__file__))
+image_file_name = "whitespot.jpg"
+results_file_name = "results_awstextract.txt"
+read_image_path = os.path.join(current_dir, "images", image_file_name)
+result_path = os.path.join(current_dir, "results", results_file_name)
 
 # Read document content
-with open(documentName, 'rb') as document:
+with open(read_image_path, 'rb') as document:
     imageBytes = bytearray(document.read())
 
 # Amazon Textract client
@@ -21,7 +24,7 @@ response = textract.detect_document_text(Document={'Bytes': imageBytes})
 
 # print(response)
 
-with open(".\\results\\readme_aws.txt", "w", encoding='utf=8') as f:
+with open(result_path, "w", encoding='utf=8') as f:
 
     # Print detected text
     for item in response["Blocks"]:

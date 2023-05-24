@@ -102,7 +102,13 @@ print("===== Read File - local =====")
 # start timer
 start_time = time.time()
 # Get image path
-read_image_path = os.path.join("./images/whitespot.jpg")
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+image_file_name = "whitespot.jpg"
+results_file_name = "results_azure.txt"
+
+read_image_path = os.path.join(current_dir, "images", image_file_name)
+result_path = os.path.join(current_dir, "results", results_file_name)
 # Open the image
 read_image = open(read_image_path, "rb")
 
@@ -119,9 +125,9 @@ while True:
     if read_result.status.lower() not in ['notstarted', 'running']:
         break
     print('Waiting for result...')
-    time.sleep(10)
+    time.sleep(1)
 
-with open(".\\results\\readme_azure.txt", "w", encoding='utf=8') as f:
+with open(result_path, "w", encoding='utf=8') as f:
 
     # Print results, line by line
     if read_result.status == OperationStatusCodes.succeeded:

@@ -1,6 +1,14 @@
 import argparse
 import time
+import os
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+image_file_name = "whitespot.jpg"
+results_file_name = "results_google.txt"
+
+read_image_path = os.path.join(current_dir, "images", image_file_name)
+result_path = os.path.join(current_dir, "results", results_file_name)
 
 def detect_text(path):
     from google.cloud import vision
@@ -23,7 +31,7 @@ def detect_text(path):
 
         print('bounds: {}'.format(','.join(vertices)))
 
-    with open(".\\results\\readme_goog.txt", "w", encoding='utf=8') as f:
+    with open(result_path, "w", encoding='utf=8') as f:
         for s in range(1):
             f.write(texts[s].description)
 
@@ -44,7 +52,7 @@ def run_local(args):
 
 
 start_time = time.time()
-detect_text("./images/whitespot.jpg")
+detect_text(read_image_path)
 print("Elapsed time: {} seconds".format(time.time() - start_time))
 
 if __name__ == '__main__':
