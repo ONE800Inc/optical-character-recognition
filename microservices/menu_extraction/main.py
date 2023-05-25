@@ -1,7 +1,7 @@
 import openai
 
 def ChatGPT(user_text, rec):
-    openai.api_key = "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"
+    openai.api_key = "insert"
 
     if rec:
         messages = [
