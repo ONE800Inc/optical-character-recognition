@@ -1,27 +1,3 @@
-'''
-Computer Vision Quickstart for Microsoft Azure Cognitive Services. 
-Uses local and remote images in each example.
-Prerequisites:
-    - Install the Computer Vision SDK:
-      pip install --upgrade azure-cognitiveservices-vision-computervision
-    - Install PIL:
-      pip install --upgrade pillow
-    - Create folder and collect images: 
-      Create a folder called "images" in the same folder as this script.
-      Go to this website to download images:
-        https://github.com/Azure-Samples/cognitive-services-sample-data-files/tree/master/ComputerVision/Images
-      Add the following 7 images (or use your own) to your "images" folder: 
-        faces.jpg, gray-shirt-logo.jpg, handwritten_text.jpg, landmark.jpg, 
-        objects.jpg, printed_text.jpg and type-image.jpg
-Run the entire file to demonstrate the following examples:
-    - OCR: Read File using the Read API, extract text - remote
-    - OCR: Read File using the Read API, extract text - local
-References:
-    - SDK: https://docs.microsoft.com/en-us/python/api/azure-cognitiveservices-vision-computervision/azure.cognitiveservices.vision.computervision?view=azure-python
-    - Documentaion: https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/index
-    - API: https://westus.dev.cognitive.microsoft.com/docs/services/computer-vision-v3-2/operations/5d986960601faab4bf452005
-'''
-
 # <snippet_imports_and_vars>
 # <snippet_imports>
 from azure.cognitiveservices.vision.computervision import ComputerVisionClient
@@ -104,7 +80,7 @@ start_time = time.time()
 # Get image path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-image_file_name = "whitespot.jpg"
+image_file_name = "french2.jpg"
 results_file_name = "results_azure.txt"
 
 read_image_path = os.path.join(current_dir, "images", image_file_name)
