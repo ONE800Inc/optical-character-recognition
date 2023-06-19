@@ -117,6 +117,7 @@ def get_document_bounds(image_file, feature):
 def render_doc_text(filein, fileout):
     image = Image.open(filein)
     bounds = get_document_bounds(filein, FeatureType.BLOCK)
+    print(bounds)
     draw_boxes(image, bounds, "blue")
     bounds = get_document_bounds(filein, FeatureType.PARA)
     draw_boxes(image, bounds, "red")

@@ -12,6 +12,7 @@ boto3 = "*"
 ipython = "*"
 openai = "*"
 azure-ai-formrecognizer = "==3.2.0"
+matplotlib = "*"
 
 [dev-packages]
 ipykernel = "*"
