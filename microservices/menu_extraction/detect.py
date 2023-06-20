@@ -22,14 +22,14 @@ def draw_boxes(image, bounds, color):
     for bound in bounds:
         draw.polygon(
             [
-                bound.vertices[0].x,
-                bound.vertices[0].y,
-                bound.vertices[1].x,
-                bound.vertices[1].y,
-                bound.vertices[2].x,
-                bound.vertices[2].y,
-                bound.vertices[3].x,
-                bound.vertices[3].y,
+                bound[0]['x'],
+                bound[0]['y'],
+                bound[1]['x'],
+                bound[1]['y'],
+                bound[2]['x'],
+                bound[2]['y'],
+                bound[3]['x'],
+                bound[3]['y'],
             ],
             None,
             color,
@@ -50,9 +50,11 @@ def get_document_bounds(image_file):
     objects = client.object_localization(image=image).localized_object_annotations
 
     for object_ in objects:
+      indbounds = []
       for vertex in object_.bounding_poly.normalized_vertices:
-        bounds.append({'x': vertex.x,'y': vertex.y})
-      
+        indbounds.append({'x': vertex.x * 600,'y': vertex.y * 800})
+
+      bounds.append(indbounds)
 
     # The list `bounds` contains the coordinates of the bounding boxes.
     return bounds
@@ -62,7 +64,7 @@ def render_doc_text(filein, fileout):
     image = Image.open(filein)
     bounds = get_document_bounds(filein)
     print(bounds)
-    draw_boxes(image, bounds, "blue")
+    draw_boxes(image, bounds, "red")
 
     # save image to a new file
     if fileout != 0:
