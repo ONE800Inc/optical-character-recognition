@@ -3,6 +3,7 @@ import time
 import os
 import random
 
+from typing import MutableSequence
 from enum import Enum
 from google.cloud import vision
 from PIL import Image, ImageDraw
@@ -33,11 +34,14 @@ def draw_boxes(image, bounds, color):
             ],
             None,
             color,
+            width=5
         )
     return image
 
 def get_document_bounds(image_file):
     """Returns document bounds given an image."""
+    im = Image.open(image_file)
+    w, h = im.size
     client = vision.ImageAnnotatorClient()
 
     bounds = []
@@ -52,7 +56,7 @@ def get_document_bounds(image_file):
     for object_ in objects:
       indbounds = []
       for vertex in object_.bounding_poly.normalized_vertices:
-        indbounds.append({'x': vertex.x * 600,'y': vertex.y * 800})
+        indbounds.append({'x': vertex.x * w,'y': vertex.y * h})
 
       bounds.append(indbounds)
 
@@ -63,7 +67,7 @@ def get_document_bounds(image_file):
 def render_doc_text(filein, fileout):
     image = Image.open(filein)
     bounds = get_document_bounds(filein)
-    print(bounds)
+    # print(bounds)
     draw_boxes(image, bounds, "red")
 
     # save image to a new file
@@ -94,15 +98,92 @@ def localize_objects(path):
         print("Normalized bounding polygon vertices: ")
         for vertex in object_.bounding_poly.normalized_vertices:
             print(f" - ({vertex.x}, {vertex.y})")
+
+def get_crop_hint(path: str) -> MutableSequence[vision.Vertex]:
+    """Detect crop hints on a single image and return the first result.
+
+    Args:
+        path: path to the image file.
+
+    Returns:
+        The vertices for the bounding polygon.
+    """
+    client = vision.ImageAnnotatorClient()
+
+    with open(path, "rb") as image_file:
+        content = image_file.read()
+
+    image = vision.Image(content=content)
+
+    crop_hints_params = vision.CropHintsParams(aspect_ratios=[1.77])
+    image_context = vision.ImageContext(crop_hints_params=crop_hints_params)
+
+    response = client.crop_hints(image=image, image_context=image_context)
+    hints = response.crop_hints_annotation.crop_hints
+
+    # Get bounds for the first crop hint using an aspect ratio of 1.77.
+    vertices = hints[0].bounding_poly.vertices
+
+    return vertices
+
+
+def draw_hint(image_file: str) -> None:
+    """Draw a border around the image using the hints in the vector list.
+
+    Args:
+        image_file: path to the image file.
+    """
+    vects = get_crop_hint(image_file)
+
+    im = Image.open(image_file)
+    draw = ImageDraw.Draw(im)
+    draw.polygon(
+        [
+            vects[0].x,
+            vects[0].y,
+            vects[1].x,
+            vects[1].y,
+            vects[2].x,
+            vects[2].y,
+            vects[3].x,
+            vects[3].y,
+        ],
+        None,
+        "red",
+        width=5
+    )
+    im.save("output-hint.jpg", "JPEG")
+    print("Saved new image to output-hint.jpg")
+
+
+def crop_to_hint(image_file: str) -> None:
+    """Crop the image using the hints in the vector list.
+
+    Args:
+        image_file: path to the image file.
+    """
+    vects = get_crop_hint(image_file)
+
+    im = Image.open(image_file)
+    im2 = im.crop([vects[0].x, vects[0].y, vects[2].x - 1, vects[2].y - 1])
+    im2.save("output-crop.jpg", "JPEG")
+    print("Saved new image to output-crop.jpg")
+    return im2
           
-            
+       
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("detect_file", help="The image for text detection.")
-    parser.add_argument("-out_file", help="Optional output file", default=0)
+    parser.add_argument("image_file", help="The image you'd like to crop.")
+    parser.add_argument("mode", help='Set to "crop" or "draw".')
 
     args = parser.parse_args()
-    localize_objects(args.detect_file)
-    render_doc_text(args.detect_file, args.out_file)
     
-    
+    if args.mode == "crop":
+        crop_to_hint(args.image_file)
+        localize_objects("output-crop.jpg")
+        render_doc_text("output-crop.jpg", 0)
+    elif args.mode == "draw":
+        draw_hint(args.image_file)
+    elif args.mode == "detect":
+        localize_objects(args.image_file)
+        render_doc_text(args.image_file, 0)
