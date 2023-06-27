@@ -7,7 +7,7 @@ import time
 
 start_time = time.time()
 current_dir = os.path.dirname(os.path.abspath(__file__))
-image_file_name = "french2.jpg"
+image_file_name = "chips2.jpg"
 results_file_name = "results_awstextract.txt"
 read_image_path = os.path.join(current_dir, "images", image_file_name)
 result_path = os.path.join(current_dir, "results", results_file_name)
